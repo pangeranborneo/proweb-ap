@@ -48,6 +48,47 @@ app.get('/produk', async (req, res) => {
   }
 });
 
+// UPDATE - Mengupdate data produk berdasarkan ID
+app.put('/produk/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nama, harga } = req.body;
+  try {
+    const updateProduk = await pool.query(
+      'UPDATE produk SET nama = $1, harga = $2 WHERE id = $3 RETURNING *',
+      [nama, harga, id]
+    );
+
+    if (updateProduk.rows.length === 0) {
+      return res.status(404).json({ error: 'Produk tidak ditemukan' });
+    }
+
+    res.json(updateProduk.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// DELETE - Menghapus produk berdasarkan ID
+app.delete('/produk/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deleteProduk = await pool.query(
+      'DELETE FROM produk WHERE id = $1 RETURNING *',
+      [id]
+    );
+
+    if (deleteProduk.rows.length === 0) {
+      return res.status(404).json({ error: 'Produk tidak ditemukan' });
+    }
+
+    res.json({ message: `Produk dengan ID ${id} berhasil dihapus`, data: deleteProduk.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
