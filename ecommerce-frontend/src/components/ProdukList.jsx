@@ -1,104 +1,97 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ProdukList() {
   const [produk, setProduk] = useState([]);
   const [editingProduk, setEditingProduk] = useState(null);
   const [editNama, setEditNama] = useState('');
   const [editHarga, setEditHarga] = useState('');
-  const Erase = () => toast("Produk Berhasil dihapus!");
-  const Change = () => toast("Produk Berhasil disimpan!");
 
   useEffect(() => {
     axios.get('http://localhost:3001/produk')
-      .then((response) => {
-        setProduk(response.data);
-      })
+      .then((response) => setProduk(response.data))
       .catch((error) => console.error(error));
   }, []);
 
-  const Delete = (id) => {
-    // Menambahkan konfirmasi sebelum menghapus
-    const isConfirmed = window.confirm("Apakah Anda yakin ingin menghapus produk ini?");
-    if (isConfirmed) {
+  const handleDelete = (id) => {
+    if (window.confirm("Yakin ingin menghapus?")) {
       axios.delete(`http://localhost:3001/produk/${id}`)
         .then(() => {
-          setProduk(produk.filter((p) => p.id !== id));
-          Erase(); // Menampilkan notifikasi penghapusan berhasil
+          setProduk(produk.filter(p => p.id !== id));
+          toast.success("Produk dihapus!", { autoClose: 2000 });
         })
         .catch(err => console.error(err));
-      }    
+    }
   };
 
-  const startEdit = (produk) => {
-    setEditingProduk(produk.id);
-    setEditNama(produk.nama);
-    setEditHarga(produk.harga);
-  };
-
-  const cancelEdit = () => {
-    setEditingProduk(null);
-    setEditNama('');
-    setEditHarga('');
-  };
-
-  const saveEdit = () => {
+  const handleSave = () => {
     axios.put(`http://localhost:3001/produk/${editingProduk}`, { nama: editNama, harga: editHarga })
-      .then((response) => {
-        setProduk(produk.map(p => p.id === editingProduk ? response.data : p));
-        cancelEdit();
+      .then((res) => {
+        setProduk(produk.map(p => p.id === editingProduk ? res.data : p));
+        setEditingProduk(null);
+        toast.success("Perubahan disimpan!", { autoClose: 2000 });
       })
       .catch(err => console.error(err));
   };
 
   return (
-    <div className="container produk-container">
-      <h2 className="text-center mb-4">Daftar Produk (From Database)</h2>
-      <ul className="list-group produk-list">
+    <div className="container mt-5">
+      <h2 className="mb-4 text-primary">Daftar Produk</h2>
+      <div className="row row-cols-1 row-cols-md-2 g-4">
         {produk.map((item) => (
-          <li key={item.id} className="list-group-item produk-item d-flex justify-content-between align-items-center">
-            {editingProduk === item.id ? (
-              <div className="d-flex flex-column">
-                <div className="d-flex">
-                <input
-                  type="text"
-                  value={editNama}
-                  onChange={(e) => setEditNama(e.target.value)}
-                  className="form-control mb-2"
-                  />
-                <input
-                  type="number"
-                  value={editHarga}
-                  onChange={(e) => setEditHarga(e.target.value)}
-                  className="form-control mb-2"
-                  />
+          <div key={item.id} className="col">
+            <div className="card h-100 shadow-sm">
+              {editingProduk === item.id ? (
+                <div className="card-body">
+                  <div className="mb-3">
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={editNama}
+                      onChange={(e) => setEditNama(e.target.value)}
+                    />
                   </div>
-                <div>
-                <button className="btn btn-success me-2" onClick={() => {saveEdit();Change();}}>Save</button>
-                  <button className="btn btn-secondary" onClick={cancelEdit}>Cancel</button>
+                  <div className="mb-3">
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={editHarga}
+                      onChange={(e) => setEditHarga(e.target.value)}
+                    />
+                  </div>
+                  <div className="d-grid gap-2">
+                    <button className="btn btn-success" onClick={handleSave}>Simpan</button>
+                    <button className="btn btn-secondary" onClick={() => setEditingProduk(null)}>Batal</button>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div>
-                <strong>{item.nama}</strong> - Rp{item.harga}
-              </div>
-            )}
-            <div>
-              {/* <button className="btn btn-danger me-2" onClick={() => {Delete(item.id);Erase();}}>Delete</button> */}
-              <button className="btn btn-danger me-2" onClick={() => Delete(item.id)}>Delete</button>
-
-
-              <button className="btn btn-primary" onClick={() => startEdit(item)}>Edit</button>
+              ) : (
+                <div className="card-body d-flex flex-column justify-content-between">
+                  <div>
+                    <h5 className="card-title text-truncate">{item.nama}</h5>
+                    <p className="card-text text-muted">Rp{item.harga.toLocaleString()}</p>
+                  </div>
+                  <div className="d-flex justify-content-end gap-2 mt-3">
+                    <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(item.id)}>
+                      <i className="bi bi-trash"></i>
+                    </button>
+                    <button className="btn btn-sm btn-outline-primary" onClick={() => {
+                      setEditingProduk(item.id);
+                      setEditNama(item.nama);
+                      setEditHarga(item.harga);
+                    }}>
+                      <i className="bi bi-pencil"></i>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
-          </li>
+          </div>
         ))}
-      </ul>
-      <div>
-      <ToastContainer />
       </div>
+      <ToastContainer position="top-right" />
     </div>
-  
   );
 }
 
