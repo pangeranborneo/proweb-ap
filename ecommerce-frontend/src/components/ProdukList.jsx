@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 
 function ProdukList() {
   const [produk, setProduk] = useState([]);
   const [editingProduk, setEditingProduk] = useState(null);
   const [editNama, setEditNama] = useState('');
   const [editHarga, setEditHarga] = useState('');
+  const Erase = () => toast("Produk Berhasil dihapus!");
+  const Change = () => toast("Produk Berhasil disimpan!");
 
   useEffect(() => {
     axios.get('http://localhost:3001/produk')
@@ -67,7 +70,7 @@ function ProdukList() {
                   />
                   </div>
                 <div>
-                  <button className="btn btn-success me-2" onClick={saveEdit}>Save</button>
+                <button className="btn btn-success me-2" onClick={() => {saveEdit();Change();}}>Save</button>
                   <button className="btn btn-secondary" onClick={cancelEdit}>Cancel</button>
                 </div>
               </div>
@@ -77,15 +80,19 @@ function ProdukList() {
               </div>
             )}
             <div>
-              <button className="btn btn-danger me-2" onClick={() => Delete(item.id)}>Delete</button>
+              <button className="btn btn-danger me-2" onClick={() => {Delete(item.id);Erase();}}>Delete</button>
+      
+
               <button className="btn btn-primary" onClick={() => startEdit(item)}>Edit</button>
             </div>
           </li>
         ))}
       </ul>
-      
+      <div>
+      <ToastContainer />
+      </div>
     </div>
-    
+  
   );
 }
 

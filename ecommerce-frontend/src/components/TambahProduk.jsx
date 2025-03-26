@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 
 function TambahProduk() {
   const [nama, setNama] = useState('');
   const [harga, setHarga] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState(''); // State untuk pesan sukses
+  const Adding = () => toast("Produk Berhasil Ditambah!");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -69,10 +71,11 @@ function TambahProduk() {
                   />
                 </div>
                 <div className="d-grid">
-                  <button type="submit" className="btn btn-primary">Simpan</button>
+                  <button type="submit" onClick={Adding} className="btn btn-primary">Simpan</button>
                 </div>
               </form>
             </div>
+            <ToastContainer />
           </div>
         </div>
       </div>
