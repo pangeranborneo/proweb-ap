@@ -19,11 +19,16 @@ function ProdukList() {
   }, []);
 
   const Delete = (id) => {
-    axios.delete(`http://localhost:3001/produk/${id}`)
-      .then(() => {
-        setProduk(produk.filter((p) => p.id !== id));
-      })
-      .catch(err => console.error(err));
+    // Menambahkan konfirmasi sebelum menghapus
+    const isConfirmed = window.confirm("Apakah Anda yakin ingin menghapus produk ini?");
+    if (isConfirmed) {
+      axios.delete(`http://localhost:3001/produk/${id}`)
+        .then(() => {
+          setProduk(produk.filter((p) => p.id !== id));
+          Erase(); // Menampilkan notifikasi penghapusan berhasil
+        })
+        .catch(err => console.error(err));
+      }    
   };
 
   const startEdit = (produk) => {
@@ -80,8 +85,9 @@ function ProdukList() {
               </div>
             )}
             <div>
-              <button className="btn btn-danger me-2" onClick={() => {Delete(item.id);Erase();}}>Delete</button>
-      
+              {/* <button className="btn btn-danger me-2" onClick={() => {Delete(item.id);Erase();}}>Delete</button> */}
+              <button className="btn btn-danger me-2" onClick={() => Delete(item.id)}>Delete</button>
+
 
               <button className="btn btn-primary" onClick={() => startEdit(item)}>Edit</button>
             </div>
