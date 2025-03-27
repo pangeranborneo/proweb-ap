@@ -127,8 +127,8 @@ app.use(cors());
 ---
 
 ## Dikerjakan Oleh:
-Pangeran Borneo Silaen - 10231073 Frontend &
-Arthur Tirtajaya Jehuda - 10231019 Backend 
+Pangeran Borneo Silaen - 10231073 Backend &
+Arthur Tirtajaya Jehuda - 10231019 Frontend 
 
 ---
 
