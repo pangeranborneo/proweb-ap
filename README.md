@@ -103,15 +103,6 @@ npm run dev
 
 ---
 
-## Screenshot Aplikasi
-### Halaman Daftar Produk
-![alt text](image.png)
-
-### Halaman Tambah Produk
-![alt text](image-1.png)
-
----
-
 ## Troubleshooting
 ⚠️ **CORS Error**  
 Pastikan backend sudah menggunakan middleware:
